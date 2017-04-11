@@ -1,23 +1,32 @@
 package com.naveen.watcher;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.naveen.storage.StorageProperties;
 import com.naveen.storage.StorageService;
 
 @Service
 public class FileSystemWatcherService {
-	String dirName = "/Users/naveen/Documents/temp/";
+
 	private static Logger log = LoggerFactory.getLogger(FileSystemWatcherService.class);
 	private final StorageService storageService;
+	private final Path rootLocation;
 
 	@Autowired
-	public FileSystemWatcherService(StorageService storageService) {
+	public FileSystemWatcherService(StorageService storageService, StorageProperties properties) {
 		this.storageService = storageService;
+		this.rootLocation = Paths.get(properties.getlocationDockLocation());
 	}
 
 	public void startFileWatcher() {
@@ -28,22 +37,33 @@ public class FileSystemWatcherService {
 			watchService.register( // May throw
 					new DirectoryWatcher.OnFileChangeListener() {
 						@Override
-						public void onFileCreate(String filePath) {
+						public void onFileCreate(Path filePath) {
 							// File created
-							log.info("File created :" + filePath);						}
+							log.info("File created :" + filePath.toString());
+
+							InputStream targetStream = null;
+							try {
+								targetStream = new FileInputStream(new File(rootLocation.resolve(filePath).toString()));
+								storageService.store(targetStream, filePath.toString());
+							} catch (FileNotFoundException e) {
+								e.printStackTrace();
+								log.error("Unable to read file [name] " + rootLocation.resolve(filePath));
+							}
+
+						}
 
 						@Override
-						public void onFileModify(String filePath) {
+						public void onFileModify(Path filePath) {
 							// File modified
-							log.info("File modified :" + filePath);
+							log.info("File modified :" + filePath.toFile().getPath());
 						}
 
 						@Override
-						public void onFileDelete(String filePath) {
+						public void onFileDelete(Path filePath) {
 							// File deleted
-							log.info("File deleted :" + filePath);
+							log.info("File deleted :" + filePath.toFile().getPath());
 						}
-					}, dirName
+					}, rootLocation.toString()
 
 			);
 
@@ -59,7 +79,7 @@ public class FileSystemWatcherService {
 			}
 
 		} catch (IOException e) {
-			log.error("Unable to register file change listener for " + dirName);
+			log.error("Unable to register file change listener for " + rootLocation.toString());
 		}
 
 	}

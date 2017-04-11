@@ -1,6 +1,7 @@
 package com.naveen.watcher;
 
 import java.io.IOException;
+import java.nio.file.Path;
 
 public interface DirectoryWatcher extends Watcher {
 
@@ -30,19 +31,19 @@ public interface DirectoryWatcher extends Watcher {
          * Called when the file is created.
          * @param filePath The file path.
          */
-        default void onFileCreate(String filePath) {}
+        default void onFileCreate(Path filePath) {}
 
         /**
          * Called when the file is modified.
          * @param filePath The file path.
          */
-        default void onFileModify(String filePath) {}
+        default void onFileModify(Path filePath) {}
 
         /**
          * Called when the file is deleted.
          * @param filePath The file path.
          */
-        default void onFileDelete(String filePath) {}
+        default void onFileDelete(Path filePath) {}
     }
 
     

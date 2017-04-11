@@ -112,11 +112,11 @@ public class DirectoryWatcherImpl implements DirectoryWatcher, Runnable {
 			Path file = pathEvent.context();
 
 			if (eventKind.equals(ENTRY_CREATE)) {
-				matchedListeners(getDirPath(key), file).forEach(listener -> listener.onFileCreate(file.toString()));
+				matchedListeners(getDirPath(key), file).forEach(listener -> listener.onFileCreate(file));
 			} else if (eventKind.equals(ENTRY_MODIFY)) {
-				matchedListeners(getDirPath(key), file).forEach(listener -> listener.onFileModify(file.toString()));
+				matchedListeners(getDirPath(key), file).forEach(listener -> listener.onFileModify(file));
 			} else if (eventKind.equals(ENTRY_DELETE)) {
-				matchedListeners(getDirPath(key), file).forEach(listener -> listener.onFileDelete(file.toString()));
+				matchedListeners(getDirPath(key), file).forEach(listener -> listener.onFileDelete(file));
 			}
 		}
 	}

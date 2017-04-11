@@ -8,7 +8,12 @@ public class StorageProperties {
     /**
      * Folder location for storing files
      */
-    private String location = "upload-dir";
+    private String location = "/Users/naveen/Documents/upload-dir/";
+    
+    /**
+     * Folder location for storing files
+     */
+    private String locationDock = "/Users/naveen/Documents/temp/";
 
     public String getLocation() {
         return location;
@@ -18,4 +23,11 @@ public class StorageProperties {
         this.location = location;
     }
 
+    public String getlocationDockLocation() {
+        return locationDock;
+    }
+
+    public void setlocationDockLocation(String location) {
+        this.locationDock = location;
+    }
 }
