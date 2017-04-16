@@ -23,11 +23,11 @@ public class StorageProperties {
         this.location = location;
     }
 
-    public String getlocationDockLocation() {
+    public String getDockLocation() {
         return locationDock;
     }
 
-    public void setlocationDockLocation(String location) {
+    public void setDockLocation(String location) {
         this.locationDock = location;
     }
 }

@@ -21,10 +21,12 @@ import org.springframework.web.multipart.MultipartFile;
 public class FileSystemStorageService implements StorageService {
 	private static Logger log = LoggerFactory.getLogger(FileSystemStorageService.class);
 	private final Path rootLocation;
+	private final Path dockLocation;
 
 	@Autowired
 	public FileSystemStorageService(StorageProperties properties) {
 		this.rootLocation = Paths.get(properties.getLocation());
+		this.dockLocation = Paths.get(properties.getDockLocation());
 	}
 
 	@Override
@@ -34,7 +36,7 @@ public class FileSystemStorageService implements StorageService {
 				throw new StorageException("Failed to store empty file " + file.getOriginalFilename());
 			}
 			Files.copy(file.getInputStream(), this.rootLocation.resolve(file.getOriginalFilename()));
-			log.info("File copied :"+file.getOriginalFilename());
+			log.info("File copied :" + file.getOriginalFilename());
 		} catch (IOException e) {
 			throw new StorageException("Failed to store file " + file.getOriginalFilename(), e);
 		}
@@ -43,11 +45,11 @@ public class FileSystemStorageService implements StorageService {
 	@Override
 	public void store(InputStream is, String fileName) {
 		try {
-			if (fileName == null ||  is == null) {
+			if (fileName == null || is == null) {
 				throw new StorageException("Failed to store empty file " + fileName);
 			}
 			Files.copy(is, this.rootLocation.resolve(fileName));
-			log.info("File copied :"+this.rootLocation.resolve(fileName));
+			log.info("File copied :" + this.rootLocation.resolve(fileName));
 		} catch (IOException e) {
 			throw new StorageException("Failed to store file " + fileName, e);
 		}
@@ -87,6 +89,7 @@ public class FileSystemStorageService implements StorageService {
 
 	@Override
 	public void deleteAll() {
+		FileSystemUtils.deleteRecursively(dockLocation.toFile());
 		FileSystemUtils.deleteRecursively(rootLocation.toFile());
 	}
 
@@ -97,5 +100,16 @@ public class FileSystemStorageService implements StorageService {
 		} catch (IOException e) {
 			throw new StorageException("Could not initialize storage", e);
 		}
+	}
+
+	@Override
+	public void deletefile(Path path) {
+		try {
+			Files.delete(rootLocation.resolve(path));
+			
+		} catch (IOException e) {
+			throw new StorageException("Failed to delete file " + path, e);
+		}
+
 	}
 }
